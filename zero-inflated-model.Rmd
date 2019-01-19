@@ -1,0 +1,44 @@
+```{r}
+library(Epi)
+library(pscl)
+library(readr)
+library(Metrics)
+library(countreg)
+library(sandwich)
+```
+
+
+```{r}
+matched <- read_csv("./data/matched.csv")
+
+matched <- within(matched, {
+  way <- factor(way)
+  exposed <- factor(exposed)
+  category <- factor(category)
+})
+```
+
+
+```{r}
+model_zero <- zeroinfl(
+  outcome ~ exposed + length + way + category + comerce_ratio,
+  data = matched, dist = "negbin", EM = TRUE
+)
+
+summary(model_zero)
+```
+
+
+```{r}
+round(ci.lin(model_zero, Exp = T),2)
+```
+
+
+```{r}
+rootogram(model_zero, max=40)
+```
+
+```{r}
+# coeftest(model, vcov = sandwich)
+```
+
